@@ -96,14 +96,13 @@ cat > %{buildroot}%{_sysconfdir}/profile.d/%{name}.sh<<EOF
 export CINCL=%{_datadir}/%{name}/
 export CCP4_SCR=/tmp/
 export CCP4_OPEN=UNKNOWN
-export CLIBD_MON=%{_datadir}/%{name}/monomers
-export CLIBD=%{_datadir}/%{name}
-export MMCIFDIC=%{_datadir}/%{name}
+export CLIBD_MON=%{_datadir}/%{name}/monomers/ #refmac5 bug requires / at end
+export CLIBD=%{_datadir}/%{name}/
+export MMCIFDIC=%{_datadir}/%{name}/
 export PATH=/usr/opt/bin:\$PATH
 EOF
 
 #cctbx
-
 cat > %{buildroot}%{_bindir}/ccp4-python<<EOF
 #!/bin/sh
 # ccp4-python can be used before the setup is sourced (e.g. during build)
@@ -116,6 +115,7 @@ export PYTHONPATH=\$PYTHONPATH:\$LIBTBX_BUILD/../site-packages
 export PYTHONPATH=\$PYTHONPATH:\$LIBTBX_BUILD/../site-packages/cctbx_project
 export PYTHONPATH=\$PYTHONPATH:\$LIBTBX_BUILD/../site-packages/cctbx_project/libtbx/pythonpath
 export PYTHONPATH=\$PYTHONPATH:\$LIBTBX_BUILD/lib
+export CCP4=/opt/%{name} #a necessary hack for dimple
 exec \$OPTCCP4/libexec/python2.7 "\$@"
 EOF
 
@@ -156,6 +156,22 @@ cp $CCP4BUILD/lib/libjpeg* $OPTCCP4LIB
 mkdir -p %{buildroot}/opt/%{name}/libexec
 cp -rf $CCP4BUILD/libexec/python2.7 %{buildroot}/opt/%{name}/libexec
 
+#another hack for dimple, note relative links
+mkdir -p %{buildroot}/opt/%{name}/bin
+cd %{buildroot}/opt/%{name}/bin
+cp -s ../../..%{_bindir}/pointless .
+cp -s ../../..%{_bindir}/reindex .
+cp -s ../../../usr/opt/bin/truncate .
+cp -s ../../..%{_bindir}/phaser .
+cp -s ../../..%{_bindir}/refmac5 .
+cp -s ../../..%{_bindir}/unique .
+cp -s ../../..%{_bindir}/pdbset .
+cp -s ../../..%{_bindir}/freerflag .
+cp -s ../../..%{_bindir}/rwcontents .
+cp -s ../../..%{_bindir}/cad .
+cp -s ../../..%{_bindir}/mtzdump .
+cp -s ../../..%{_bindir}/find-blobs .
+
 #ccp4 python2.7 comes with it's own library, need to update rpath
 exec %{buildroot}/opt/%{name}/libexec/python2.7 -Wignore -m compileall %{buildroot}/opt/%{name}/lib/py2 %{buildroot}/opt/%{name}/python2.7
 
@@ -179,7 +195,9 @@ exec %{buildroot}/opt/%{name}/libexec/python2.7 -Wignore -m compileall %{buildro
 %{_sysconfdir}/ld.so.conf.d/%{name}.conf
 %{_sysconfdir}/profile.d/%{name}.sh
 
+#python
 %{_bindir}/ccp4-python
+/opt/%{name}/bin/*
 /opt/%{name}/lib/*
 /opt/%{name}/libexec/*
 
