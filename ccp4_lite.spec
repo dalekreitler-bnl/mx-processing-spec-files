@@ -27,7 +27,8 @@ Some CCP4 programs use environment variables as shell script, pertinent variable
 were extracted and placed as startup script in /etc/profile.d.\
 Also, added ccp4 python2.7 binary with associated libraries and\
 site-packages including the cctbx_project. This binary is called in a sh script\
-called ccp4-python where PYTHONPATH is defined to point to custom site-packages\which include both MX, e.g. cctbx_project, and non-MX, e.g. six or futures.\
+called ccp4-python where PYTHONPATH is defined to point to custom site-packages/
+which include both MX, e.g. cctbx_project, and non-MX, e.g. six or futures.\
 During installation the ccp4 python2.7 binary is linked to required lib .so\
 files distributed with ccp4-%{version}. Dimple assumes certain relative file\
 paths of ccp4 based on an environment variable called CCP4.\
