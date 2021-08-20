@@ -14,14 +14,25 @@ Requires:       lapack
 
 %description
 Minimal computational crystallography stack for macromolecular crystallography\
-data reduction, data processing, model phasing, and refinement. Building from\
-source seems to require a version control package (bazaar) that is not readily\
-available for RHEL8 (as rpm). So, opted for packing pre-built Linux-x86_64 binaries.\
+data reduction, data processing, model phasing, and refinement. Standalone ccp4\
+programs are installed in usual system lib and bin directories. Special python\
+environment including libraries and executables are installed in /opt/ccp4.\
+Building from source seems to require a version control package (bazaar) that\
+is not readily available for RHEL8 (as rpm). So, opted for packing pre-built\
+Linux-x86_64 binaries.\
 Downstream NSLS-II MX data processing packages that use CCP4\
 programs rely on small, static subset of CCP4 capabilities. Updates to this\
 package should be infrequent.\
 Some CCP4 programs use environment variables as shell script, pertinent variables\
-were extracted and placed as startup script in /etc/profile.d
+were extracted and placed as startup script in /etc/profile.d.\
+Also, added ccp4 python2.7 binary with associated libraries and\
+site-packages including the cctbx_project. This binary is called in a sh script\
+called ccp4-python where PYTHONPATH is defined to point to custom site-packages\which include both MX, e.g. cctbx_project, and non-MX, e.g. six or futures.\
+During installation the ccp4 python2.7 binary is linked to required lib .so\
+files distributed with ccp4-%{version}. Dimple assumes certain relative file\
+paths of ccp4 based on an environment variable called CCP4.\
+Because I was uncertain if this CCP4 variable is used by other non-python\
+programs in ccp4, I opted to set it in ccp4-python script. 
 
 %define __arch_install_post %{nil}
 %define __os_install_post %{nil}
@@ -212,4 +223,8 @@ rm -rf %{buildroot}/%{name}-%{version}
 
 %changelog
 * Sun Aug  8 2021 dkreitler
--inital commit for pointless, aimless, truncate, refmac5, phaser 
+-inital commit for pointless, aimless, truncate, refmac5, phaser
+* Fri Aug 27 2021 dkreitler
+-add python environment required by dimple and fast_dp
+-include additional ccp4 programs required by dimple
+-pdbset, reindex, cad, freerflag, unique, rwcontents, find-blobs
